@@ -1,0 +1,761 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Dalca Brasil — Dashboard FAT 2025-2026</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js">
+function notifyTeam(){
+  var ts=document.getElementById('upmeta').textContent;
+  var fname=document.getElementById('upst').textContent.replace('✓ ','').split(' · ')[0];
+  var hoje=new Date().toLocaleDateString('pt-BR',{weekday:'long',day:'2-digit',month:'long',year:'numeric'});
+  var hora=new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
+  var tos=['emanuel@dalcabrasil.com.br','raquel.silva@dalcabrasil.com.br','suelen@dalcabrasil.com.br','ariedne@dalcabrasil.com.br','bruno@dalcabrasil.com.br'];
+  var subj='[DALCA GP] Dashboard FAT atualizado — '+hoje;
+  var body='Olá equipe,\n\n'
+    +'O dashboard de FAT 2025-2026 foi atualizado com os dados mais recentes.\n\n'
+    +'📅 Atualizado em: '+hoje+' às '+hora+'\n'
+    +'📊 Arquivo: '+fname+'\n'
+    +'📁 Dashboard: abra o arquivo dalca-fatRaw-v3.html no seu navegador\n\n'
+    +'Para visualizar os dados atualizados, basta abrir o dashboard e carregar o arquivo da planilha.\n\n'
+    +'Att.,\nGerência de GP — Dalca Brasil | Emanuel';
+  window.location.href='mailto:'+tos.join(',')+
+    '?subject='+encodeURIComponent(subj)+
+    '&body='+encodeURIComponent(body);
+  setTimeout(function(){document.getElementById('nbanner').classList.remove('on');},1500);
+}
+
+);
+  document.getElementById('nbanner-title').textContent='Planilha atualizada às '+hora+' — avisar a equipe?';
+  document.getElementById('nbanner-sub').textContent=count+' projetos carregados de '+fname+' · Clique para notificar os 5 destinatários via Outlook';
+  document.getElementById('nbanner').classList.add('on');
+}
+</script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  /* Paleta Dalca Brasil */
+  --bg:#f0f2f5;
+  --bg2:#e5e8ed;
+  --sf:#ffffff;
+  --s2:#f7f8fa;
+  --bd:#dde1e8;
+  --bd2:#c8cdd8;
+
+  /* Primária — azul Dalca */
+  --blue:#002B5C;
+  --blue2:#003B7A;
+  --blue3:#0055AA;
+  --bluelight:#e8eef7;
+
+  /* Acento — vermelho Dalca */
+  --red:#E8650A;
+  --redlight:#fff3eb;
+
+  /* Status */
+  --green:#0a7c3e;
+  --greenlight:#e6f4ed;
+  --amber:#b45309;
+  --amberlight:#fef3c7;
+  --purple:#6d28d9;
+  --purplelight:#ede9fe;
+  --teal:#0e7490;
+  --teallight:#e0f2fe;
+  --gray:#4b5563;
+  --graylight:#f3f4f6;
+  --orange:#c2410c;
+  --orangelight:#fff7ed;
+
+  --tx:#1a1f2e;
+  --tx2:#374151;
+  --mt:#6b7280;
+  --mt2:#9ca3af;
+}
+body{background:var(--bg);color:var(--tx);font-family:'Montserrat',sans-serif;min-height:100vh}
+
+/* ── TOPBAR ── */
+.topbar{background:var(--blue);padding:0 32px;display:flex;align-items:center;justify-content:space-between;height:56px;position:sticky;top:0;z-index:50;box-shadow:0 2px 8px rgba(0,43,92,.25)}
+.topbar-logo{display:flex;align-items:center;gap:12px}
+.topbar-logo .mark{width:32px;height:32px;background:var(--red);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;color:#fff;letter-spacing:-1px}
+.topbar-logo .name{font-size:15px;font-weight:700;color:#fff;letter-spacing:.5px}
+.topbar-logo .name span{color:rgba(255,255,255,.5);font-weight:400}
+.topbar-right{display:flex;align-items:center;gap:16px}
+.topbar-badge{font-family:'IBM Plex Mono',monospace;font-size:10px;color:rgba(255,255,255,.5);letter-spacing:.5px}
+.sdot{display:inline-flex;align-items:center;gap:6px;font-family:'IBM Plex Mono',monospace;font-size:11px}
+.sdot.base{color:rgba(255,255,255,.4)}.sdot.base::before{background:rgba(255,255,255,.3)}
+.sdot.live{color:#4ade80}.sdot.live::before{background:#4ade80;animation:pu 2s infinite}
+.sdot::before{content:'';width:6px;height:6px;border-radius:50%;background:currentColor}
+
+/* ── SHELL ── */
+.sh{max-width:1440px;margin:0 auto;padding:24px 28px}
+
+/* ── UPLOAD BAR ── */
+.upbar{display:flex;align-items:center;gap:12px;padding:14px 20px;background:var(--sf);border:1px solid var(--bd);border-radius:10px;margin-bottom:22px;flex-wrap:wrap;box-shadow:0 1px 3px rgba(0,0,0,.06)}
+.uplbl{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--mt);letter-spacing:1.5px;text-transform:uppercase;flex-shrink:0}
+.upbtn{display:inline-flex;align-items:center;gap:8px;padding:9px 18px;background:var(--blue);color:#fff;border:none;border-radius:7px;font-family:'Montserrat',sans-serif;font-size:12px;font-weight:600;cursor:pointer;transition:background .2s;flex-shrink:0}
+.upbtn:hover{background:var(--blue2)}
+.upst{font-family:'IBM Plex Mono',monospace;font-size:11px;flex:1;min-width:0}
+.upst.base{color:var(--mt)}.upst.ok{color:var(--green)}.upst.err{color:var(--red)}.upst.ld{color:var(--blue3)}
+.upmeta{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--mt2);white-space:nowrap}
+.vsep{width:1px;height:22px;background:var(--bd);flex-shrink:0}
+.how-link{font-size:11px;color:var(--blue3);cursor:pointer;text-decoration:underline;white-space:nowrap;font-weight:500}
+.how-link:hover{color:var(--blue)}
+
+/* ── HOW-TO MODAL ── */
+.how-box{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:300;align-items:center;justify-content:center}
+.how-box.on{display:flex}
+.how-inner{background:var(--sf);border-radius:14px;padding:28px;max-width:460px;width:95vw;box-shadow:0 20px 40px rgba(0,0,0,.2)}
+.how-inner h3{font-size:18px;font-weight:700;color:var(--blue);margin-bottom:18px}
+.how-step{display:flex;gap:12px;margin-bottom:14px;font-size:13px;color:var(--tx2);line-height:1.5}
+.how-num{width:24px;height:24px;border-radius:50%;background:var(--bluelight);color:var(--blue);font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+.how-step b{color:var(--tx);font-weight:600}
+.how-close{width:100%;padding:10px;border-radius:8px;background:var(--bluelight);border:none;color:var(--blue);cursor:pointer;font-family:'Montserrat',sans-serif;font-size:12px;font-weight:600;margin-top:6px}
+
+/* ── DRAG OVERLAY ── */
+.drov{position:fixed;inset:0;background:rgba(0,43,92,.08);border:4px dashed var(--blue);z-index:200;display:none;align-items:center;justify-content:center;flex-direction:column;gap:16px}
+.drov.on{display:flex}
+.drov big{font-size:28px;font-weight:700;color:var(--blue)}
+.drov small{font-size:13px;color:var(--mt);font-family:'IBM Plex Mono',monospace}
+
+/* ── FILTERS ── */
+.filt{display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap;align-items:center}
+.fb{padding:6px 13px;border-radius:7px;border:1.5px solid var(--bd);background:var(--sf);color:var(--mt);font-size:12px;font-weight:500;cursor:pointer;transition:all .15s}
+.fb:hover{border-color:var(--blue3);color:var(--blue)}
+.fb.on{background:var(--blue);border-color:var(--blue);color:#fff}
+.fsep{width:1px;height:26px;background:var(--bd);flex-shrink:0}
+select.ys{padding:6px 10px;border-radius:7px;border:1.5px solid var(--bd);background:var(--sf);color:var(--tx);font-family:'Montserrat',sans-serif;font-size:12px;font-weight:500;cursor:pointer;outline:none}
+select.ys:focus{border-color:var(--blue3)}
+.sb{flex:1;min-width:160px;padding:6px 14px;border-radius:7px;border:1.5px solid var(--bd);background:var(--sf);color:var(--tx);font-family:'Montserrat',sans-serif;font-size:13px;outline:none}
+.sb::placeholder{color:var(--mt2)}.sb:focus{border-color:var(--blue3)}
+
+/* ── KPIS ── */
+.kpis{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin-bottom:22px}
+.kp{background:var(--sf);border:1px solid var(--bd);border-radius:10px;padding:18px 20px;position:relative;overflow:hidden;transition:transform .2s,box-shadow .2s;box-shadow:0 1px 3px rgba(0,0,0,.05)}
+.kp:hover{transform:translateY(-2px);box-shadow:0 4px 12px rgba(0,0,0,.1)}
+.kp-accent{position:absolute;top:0;left:0;right:0;height:3px;background:var(--kc,var(--blue))}
+.kl{font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--mt);font-weight:600;margin-bottom:8px}
+.kv{font-size:34px;font-weight:800;line-height:1;color:var(--kc,var(--blue))}
+.ks{font-size:11px;color:var(--mt2);margin-top:4px;font-weight:500}
+
+/* ── MAIN GRID ── */
+.mn{display:grid;grid-template-columns:1fr 350px;gap:20px}
+.lc,.rc{display:flex;flex-direction:column;gap:20px}
+.cd{background:var(--sf);border:1px solid var(--bd);border-radius:10px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,.05)}
+.ch{display:flex;justify-content:space-between;align-items:center;padding:14px 20px;border-bottom:1px solid var(--bd);background:var(--s2)}
+.ct{font-size:11px;letter-spacing:1.5px;text-transform:uppercase;font-weight:700;color:var(--blue)}
+.cbg{font-family:'IBM Plex Mono',monospace;font-size:10px;padding:3px 10px;border-radius:20px;background:var(--bluelight);color:var(--blue3);font-weight:500}
+
+/* ── CALENDAR ── */
+.cal{padding:16px 20px;overflow-x:auto}
+.cg{display:flex;gap:14px;min-width:max-content}
+.mc{min-width:110px}
+.mlb{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--blue);margin-bottom:8px;padding-bottom:6px;border-bottom:3px solid var(--blue);display:flex;align-items:center;justify-content:space-between}
+.mlb .mcnt{font-size:10px;font-weight:600;background:var(--bluelight);color:var(--blue3);padding:1px 6px;border-radius:10px}
+.chip{
+  padding:8px 10px;
+  border-radius:8px;
+  margin-bottom:6px;
+  cursor:pointer;
+  transition:all .15s;
+  border:1px solid transparent;
+  border-left:10px solid transparent; /* espessura da "barra" da timeline */
+}
+.chip:hover{transform:translateX(2px);box-shadow:0 4px 10px rgba(0,0,0,.10)}
+.ctd{font-family:'IBM Plex Mono',monospace;font-size:9px;opacity:.70;margin-bottom:2px;font-weight:600}
+.ccl{font-size:11px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:95px}
+.cdt{font-family:'IBM Plex Mono',monospace;font-size:9px;opacity:.70}
+
+/* STATUS CHIP COLORS (Timeline / Lista lateral) */
+.c-ent{background:#DFF6E7;border-color:#A7E1BF;border-left-color:#1B8F3A;color:#0F5132}     /* Entregue / Expedição */
+.c-prod{background:#FFF3A6;border-color:#F5D565;border-left-color:#D4A600;color:#1F2937}    /* Em produção */
+.c-eng{background:#F9C2D1;border-color:#F3A3BA;border-left-color:#C2185B;color:#1F2937}     /* Eng.Produto */
+.c-poc{background:#D6ECFF;border-color:#A9D3FF;border-left-color:#3B82F6;color:#0B1F35}     /* POC */
+.c-sw{background:#FAF1DD;border-color:#EEDDB8;border-left-color:#B0895B;color:#3B2F2F}      /* Software (bege claro) */
+.c-pau{background:#FFE7C2;border-color:#FFD099;border-left-color:#E67E22;color:#7A3E00}     /* Pausado */
+
+/* ── TABLE ── */
+table{width:100%;border-collapse:collapse}
+th{font-size:10px;letter-spacing:1.5px;text-transform:uppercase;font-weight:700;color:var(--blue);padding:10px 16px;text-align:left;border-bottom:2px solid var(--bd);background:var(--s2)}
+td{padding:10px 16px;border-bottom:1px solid var(--bd);font-size:12px;vertical-align:middle;color:var(--tx2)}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:#f5f7fa}
+.tc{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--blue);font-weight:600}
+.dc{font-family:'IBM Plex Mono',monospace;font-size:11px;white-space:nowrap}
+.ccol{font-size:11px;color:var(--mt);max-width:130px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+/* ── PILLS ── */
+.pi{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:600;padding:3px 9px;border-radius:20px;white-space:nowrap;border:1px solid transparent}
+.pi::before{content:'';width:5px;height:5px;border-radius:50%;background:currentColor;flex-shrink:0}
+.p-ent{background:#e6f4ed;color:var(--green);border-color:#a7d7bc}
+.p-prod{background:#e0f2fe;color:var(--teal);border-color:#7dd3fc}
+.p-sw{background:#ede9fe;color:var(--purple);border-color:#c4b5fd}
+.p-eng{background:#e0f2fe;color:var(--blue3);border-color:#93c5fd}
+.p-pau{background:var(--graylight);color:var(--gray);border-color:#d1d5db}
+.p-poc{background:#fff7ed;color:var(--orange);border-color:#fed7aa}
+.p-atr{background:var(--redlight);color:var(--red);border-color:#fca5a5}
+
+/* ── UPCOMING ── */
+.ul{padding:4px 0}
+.ui{display:flex;gap:12px;padding:12px 20px;border-bottom:1px solid var(--bd);align-items:flex-start;cursor:pointer;transition:background .15s}
+.ui:last-child{border-bottom:none}.ui:hover{background:var(--s2)}
+.ud{width:42px;height:42px;border-radius:10px;display:flex;flex-direction:column;align-items:center;justify-content:center;flex-shrink:0;background:var(--bluelight);border:1.5px solid var(--blue3)}
+.ddd{font-size:18px;line-height:1;color:var(--blue);font-weight:800}
+.mmm{font-size:9px;color:var(--blue3);font-weight:600;text-transform:uppercase}
+.ub{flex:1;min-width:0}
+.ut{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--blue);margin-bottom:2px;font-weight:500}
+.uj{font-size:12px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--tx)}
+.uc{font-size:11px;color:var(--mt)}
+.dl-u{background:var(--redlight);color:var(--red);font-size:10px;font-weight:700;padding:2px 8px;border-radius:6px;margin-top:5px;display:inline-block}
+.dl-s{background:var(--amberlight);color:var(--amber);font-size:10px;font-weight:700;padding:2px 8px;border-radius:6px;margin-top:5px;display:inline-block}
+.dl-o{background:var(--greenlight);color:var(--green);font-size:10px;font-weight:700;padding:2px 8px;border-radius:6px;margin-top:5px;display:inline-block}
+
+/* ── BAR CHART ── */
+.bc{padding:14px 20px}
+.br{display:flex;align-items:center;gap:10px;margin-bottom:7px}
+.bl{font-size:10px;font-weight:600;width:28px;color:var(--mt);text-align:right;font-family:'IBM Plex Mono',monospace}
+.bb{flex:1;height:20px;background:var(--bg2);border-radius:5px;overflow:hidden}
+.bf{height:100%;border-radius:5px;display:flex;align-items:center;justify-content:flex-end;padding-right:7px;transition:width .5s ease}
+.bv{font-size:10px;font-weight:700;color:#fff}
+
+/* ── NOTIFY ── */
+.nb{padding:16px 20px}
+.nl{font-size:11px;font-weight:600;color:var(--blue);display:block;margin-bottom:5px;text-transform:uppercase;letter-spacing:.5px}
+.ni{width:100%;background:var(--s2);border:1.5px solid var(--bd);border-radius:7px;padding:8px 12px;color:var(--tx);font-family:'Montserrat',sans-serif;font-size:13px;outline:none;margin-bottom:10px}
+.ni:focus{border-color:var(--blue3)}
+.np{background:var(--s2);border:1.5px solid var(--bd);border-radius:7px;padding:14px;font-size:11px;line-height:1.6;white-space:pre-wrap;max-height:220px;overflow-y:auto;color:var(--tx2);margin-bottom:12px;font-family:'IBM Plex Mono',monospace}
+.nbt{display:flex;gap:8px}
+.btn{padding:9px 16px;border-radius:7px;border:none;cursor:pointer;font-family:'Montserrat',sans-serif;font-size:12px;font-weight:600;transition:all .2s;flex:1}
+.btn:hover{opacity:.88}
+.b1{background:var(--blue);color:#fff}.b2{background:var(--bluelight);color:var(--blue);border:1.5px solid var(--blue)}
+.cpt{display:none;font-size:11px;color:var(--green);font-weight:600;text-align:center;margin-top:8px}
+
+/* ── DETAIL MODAL ── */
+.ov{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:200;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .2s}
+.ov.on{opacity:1;pointer-events:all}
+.mdl{background:var(--sf);border-radius:14px;padding:28px;width:520px;max-width:95vw;max-height:90vh;overflow-y:auto;box-shadow:0 20px 50px rgba(0,0,0,.2)}
+.mdl h2{font-size:20px;font-weight:700;color:var(--blue);margin-bottom:4px}
+.msb{font-size:12px;color:var(--mt);font-family:'IBM Plex Mono',monospace;margin-bottom:20px}
+.mgd{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
+.mf label{font-size:10px;font-weight:700;color:var(--blue);text-transform:uppercase;letter-spacing:1px;display:block;margin-bottom:5px}
+.mv{font-size:13px;padding:8px 0;border-bottom:1px solid var(--bd);color:var(--tx2)}
+.mva{color:var(--blue);font-family:'IBM Plex Mono',monospace;font-weight:600}
+.mob{background:var(--s2);border-radius:8px;padding:12px;font-size:12px;color:var(--mt);line-height:1.5;margin-bottom:16px;font-style:italic;border-left:3px solid var(--blue3)}
+.mc2{width:100%;padding:10px;border-radius:8px;background:var(--bluelight);border:none;color:var(--blue);cursor:pointer;font-family:'Montserrat',sans-serif;font-size:12px;font-weight:600}
+
+/* ── TOAST ── */
+.toast{position:fixed;bottom:28px;right:28px;background:var(--blue);color:#fff;padding:12px 22px;border-radius:10px;font-size:12px;font-weight:600;z-index:400;transform:translateY(20px);opacity:0;transition:all .3s;pointer-events:none;box-shadow:0 4px 16px rgba(0,43,92,.35)}
+.toast.show{transform:translateY(0);opacity:1}
+
+@keyframes pu{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.75)}}
+::-webkit-scrollbar{width:4px;height:4px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--bd2);border-radius:4px}
+@media(max-width:1100px){.mn{grid-template-columns:1fr}.kpis{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:600px){.kpis{grid-template-columns:repeat(2,1fr)}}
+
+/* ── NOTIFY BANNER ── */
+.nbanner{display:none;align-items:center;gap:14px;padding:14px 20px;background:#fff8f0;border:1.5px solid #E8650A;border-radius:10px;margin-bottom:20px;flex-wrap:wrap;animation:slideIn .4s ease}
+.nbanner.on{display:flex}
+.nbanner-icon{font-size:22px;flex-shrink:0}
+.nbanner-txt{flex:1;min-width:0}
+.nbanner-title{font-size:13px;font-weight:700;color:#c2410c;margin-bottom:2px}
+.nbanner-sub{font-size:11px;color:var(--mt)}
+.nbanner-btn{display:inline-flex;align-items:center;gap:7px;padding:9px 18px;background:#E8650A;color:#fff;border:none;border-radius:7px;font-family:'Montserrat',sans-serif;font-size:12px;font-weight:700;cursor:pointer;transition:opacity .2s;white-space:nowrap;flex-shrink:0}
+.nbanner-btn:hover{opacity:.88}
+.nbanner-dismiss{background:none;border:none;color:var(--mt);cursor:pointer;font-size:18px;padding:4px;flex-shrink:0;line-height:1}
+.nbanner-dismiss:hover{color:var(--tx)}
+@keyframes slideIn{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:translateY(0)}}
+
+.mono{font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:600}
+.pill{display:inline-flex;align-items:center;padding:3px 8px;border-radius:999px;border:1px solid rgba(0,0,0,.12);background:rgba(0,0,0,.03);font-size:11px;font-weight:600;color:var(--mt)}
+.sc,.ic{text-align:center;white-space:nowrap}
+</style>
+</head>
+<body>
+
+<!-- DRAG OVERLAY -->
+<div class="drov" id="drov">
+  <big>&#128194; Solte para atualizar</big>
+  <small>Projetos Gerais - DALCA.xlsx</small>
+</div>
+
+<!-- HOW-TO MODAL -->
+<div class="how-box" id="howBox" onclick="if(event.target===this)this.classList.remove('on')">
+  <div class="how-inner">
+    <h3>&#128196; Como atualizar semanalmente</h3>
+    <div class="how-step"><div class="how-num">1</div><div>Acesse o <b>SharePoint</b> e abra o arquivo <b>Projetos Gerais - DALCA.xlsx</b></div></div>
+    <div class="how-step"><div class="how-num">2</div><div>Clique em <b>Arquivo → Baixar uma cópia</b></div></div>
+    <div class="how-step"><div class="how-num">3</div><div>Clique em <b>"Carregar / Atualizar planilha"</b> no topo e selecione o arquivo baixado</div></div>
+    <div class="how-step"><div class="how-num">4</div><div>Dashboard atualizado <b>instantaneamente</b> — nenhum dado sai do seu computador</div></div>
+    <div class="how-step"><div class="how-num">&#10003;</div><div>Você também pode <b>arrastar o arquivo</b> direto para esta janela</div></div>
+    <button class="how-close" onclick="document.getElementById('howBox').classList.remove('on')">Fechar</button>
+  </div>
+</div>
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <div class="topbar-logo">
+    <div class="mark">DB</div>
+    <div class="name">DALCA <span>Brasil</span></div>
+  </div>
+  <div class="topbar-right">
+    <span class="topbar-badge" id="dbd"></span>
+    <span class="sdot base" id="sdlbl">Dados base</span>
+  </div>
+</div>
+
+<div class="sh">
+
+  <!-- UPLOAD BAR -->
+  <div class="upbar">
+    <span class="uplbl">Planilha</span>
+    <button class="upbtn" onclick="document.getElementById('fi').click()">
+      &#128194; Carregar / Atualizar planilha
+    </button>
+    <input type="file" id="fi" accept=".xlsx,.xls" style="display:none" onchange="hf(this.files[0])">
+    <div class="vsep"></div>
+    <span class="upst base" id="upst">Dados base de Mar/2025 — carregue o xlsx semanal para atualizar</span>
+    <span class="upmeta" id="upmeta">78 projetos</span>
+    <span class="how-link" onclick="document.getElementById('howBox').classList.add('on')">Como funciona?</span>
+  </div>
+
+
+  <!-- NOTIFY BANNER -->
+  <div class="nbanner" id="nbanner">
+    <div class="nbanner-icon">📣</div>
+    <div class="nbanner-txt">
+      <div class="nbanner-title" id="nbanner-title">Planilha atualizada — avisar a equipe?</div>
+      <div class="nbanner-sub" id="nbanner-sub"></div>
+    </div>
+    <button class="nbanner-btn" onclick="notifyTeam()">&#9993; Avisar equipe no Outlook</button>
+    <button class="nbanner-dismiss" onclick="document.getElementById('nbanner').classList.remove('on')" title="Dispensar">&#x2715;</button>
+  </div>
+
+  <!-- FILTERS -->
+  <div class="filt">
+    <select class="ys" id="ys" onchange="af()">
+      <option value="all">2025 + 2026</option>
+      <option value="2025">Apenas 2025</option>
+      <option value="2026">Apenas 2026</option>
+    </select>
+    <div class="fsep"></div>
+    <button class="fb on" onclick="sf('all',this)">Todos</button>
+    <button class="fb" onclick="sf('Entregue',this)">Entregue</button>
+    <button class="fb" onclick="sf('Em Produção',this)">Em Produção</button>
+    <button class="fb" onclick="sf('Software',this)">Software</button>
+    <button class="fb" onclick="sf('Eng.Produto',this)">Eng.Produto</button>
+    <button class="fb" onclick="sf('Pausado',this)">Pausado</button>
+    <button class="fb" onclick="sf('POC',this)">POC</button>
+    <div class="fsep"></div>
+    <input class="sb" id="sq" placeholder="&#128269; Buscar projeto, cliente ou TDS..." oninput="af()">
+  </div>
+
+  <!-- KPIS -->
+  <div class="kpis" id="kp"></div>
+
+  <!-- MAIN -->
+  <div class="mn">
+    <div class="lc">
+      <div class="cd">
+        <div class="ch"><span class="ct">Timeline FAT por Mês</span><span class="cbg" id="c1">—</span></div>
+        <div class="cal"><div class="cg" id="cg"></div></div>
+      </div>
+      <div class="cd">
+        <div class="ch"><span class="ct">Lista de Projetos</span><span class="cbg" id="c2">—</span></div>
+        <div style="overflow-x:auto">
+          <table>
+            <thead><tr><th>TDS</th><th>Cliente</th><th>Projeto</th><th>FAT Previsto</th><th>Atraso</th><th>Status</th><th>SAT</th><th>Status Inst.</th></tr></thead>
+            <tbody id="tb"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <div class="rc">
+      <div class="cd">
+        <div class="ch"><span class="ct">Próximas Entregas</span><span class="cbg" id="c3">—</span></div>
+        <div class="ul" id="ul"></div>
+      </div>
+      <div class="cd">
+        <div class="ch"><span class="ct">FATs por Mês</span><span class="cbg">acumulado</span></div>
+        <div class="bc" id="bc"></div>
+      </div>
+      <div class="cd">
+        <div class="ch"><span class="ct">&#128231; Notificar Financeiro</span><span class="cbg">Auto-email</span></div>
+        <div class="nb">
+          <label class="nl">Destinatários</label>
+          <select class="ni" id="et" multiple size="5" style="height:auto;padding:4px">
+  <option value="emanuel@dalcabrasil.com.br" selected>Emanuel — emanuel@dalcabrasil.com.br</option>
+  <option value="raquel.silva@dalcabrasil.com.br" selected>Raquel Silva — raquel.silva@dalcabrasil.com.br</option>
+  <option value="suelen@dalcabrasil.com.br" selected>Suelen — suelen@dalcabrasil.com.br</option>
+  <option value="ariedne@dalcabrasil.com.br" selected>Ariedne — ariedne@dalcabrasil.com.br</option>
+  <option value="bruno@dalcabrasil.com.br" selected>Bruno — bruno@dalcabrasil.com.br</option>
+</select>
+<div style="font-size:10px;color:var(--mt);margin-bottom:10px;margin-top:-6px">Segure Ctrl/Cmd para selecionar destinatários</div>
+          <label class="nl">Período</label>
+          <select class="ni" id="nm" onchange="bep()"></select>
+          <div class="np" id="ep"></div>
+          <div class="nbt">
+            <button class="btn b1" onclick="oml()">&#9993; Abrir no e-mail</button>
+            <button class="btn b2" onclick="cpe()">&#10697; Copiar</button>
+          </div>
+          <div class="cpt" id="cpt">&#10003; Copiado!</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- DETAIL MODAL -->
+<div class="ov" id="ov" onclick="if(event.target===this)clm()">
+  <div class="mdl">
+    <h2 id="mt"></h2>
+    <div class="msb" id="ms"></div>
+    <div class="mgd" id="mg"></div>
+    <div class="mob" id="mo" style="display:none"></div>
+    <button class="mc2" onclick="clm()">Fechar</button>
+  </div>
+</div>
+<div class="toast" id="tst"></div>
+
+<script>
+// ── BASE DATA ─────────────────────────────────────────────────────
+var BASE=[{"TDS":"012848","CLIENTE":"SARTORI","PROJETO":"CÉLULA ROB DE LIXAMENTO FLEXGRIND 2R20","FAT_date":"2025-01-18","Atraso":"","Obs":"Data FAT conforme semanas da proposta. (28 semanas)","STATUS":"Entregue"},{"TDS":"012994","CLIENTE":"WESTROCK","PROJETO":"CÉLULA ROBOTIZADA DE PALETIZAÇÃO FLEXPALL R180","FAT_date":"2025-01-20","Atraso":"","Obs":"Entrada: 26/07/24","STATUS":"Entregue"},{"TDS":"012862","CLIENTE":"DALCA ROBOTICA LTDA","PROJETO":"CÉLULA DE REBARBAÇÃO FLEXDEB R210MT DALCA MT 2025-09 EXPORT","FAT_date":"2025-01-24","Atraso":"","Obs":"Maquina vai para feira","STATUS":"Entregue"},{"TDS":"011979","CLIENTE":"CERCENA","PROJETO":"CÉLULA DE REBARBAÇÃO FLEXDEB R210MT-DALCA MT 2024-05","FAT_date":"2025-02-07","Atraso":"","Obs":"modelo atual para Cercena","STATUS":"Entregue"},{"TDS":"012953","CLIENTE":"ROMI S.A.","PROJETO":"CÉLULA DE REBARBAÇÃO FLEXDEB R210MT","FAT_date":"2025-02-11","Atraso":"","Obs":"","STATUS":"Entregue"},{"TDS":"012950","CLIENTE":"JOHN DEERE","PROJETO":"DISPOSITIVOS DE SOLDA FLEXWELD DE CABINES/PROJETO TUCANO","FAT_date":"2025-02-15","Atraso":"","Obs":"","STATUS":"Entregue"},{"TDS":"012857","CLIENTE":"C.VALE","PROJETO":"CARRO SATÉLITE FLEXSAT 1500-23","FAT_date":"2025-02-18","Atraso":"","Obs":"","STATUS":"Entregue"},{"TDS":"012855","CLIENTE":"MAXBEM","PROJETO":"CARRO SATÉLITE FLEXSAT 1500-21","FAT_date":"2025-03-07","Atraso":"","Obs":"","STATUS":"Entregue"},{"TDS":"012856","CLIENTE":"MAXBEM","PROJETO":"CARRO SATÉLITE FLEXSAT 1500-22","FAT_date":"2025-03-07","Atraso":"","Obs":"","STATUS":"Entregue"},{"TDS":"012955","CLIENTE":"AKEO INDUSTRIAL LTDA","PROJETO":"CÉLULA ROBOTIZADA DE MANIPULAÇÃO FLEXHAND/PAINT","FAT_date":"2025-03-24","Atraso":"","Obs":"","STATUS":"Entregue"},{"TDS":"013040","CLIENTE":"GA DISTRIBUIDORA (ARBUGERI)","PROJETO":"CELULA ROB DE PALETIZACAO FLEXPALL R180","FAT_date":"2025-03-26","Atraso":"","Obs":"","STATUS":"Entregue"},{"TDS":"012859","CLIENTE":"MÁQUINAS OMIL","PROJETO":"CÉLULA DE REBARBAÇÃO FLEXDEB R210MT-DALCA MT 2024-06","FAT_date":"2025-03-31","Atraso":"","Obs":"","STATUS":"Entregue"},{"TDS":"012858","CLIENTE":"PIRACANJUBA-Maravilha","PROJETO":"CARRO SATÉLITE FLEXSAT 1500-24","FAT_date":"2025-04-04","Atraso":"","Obs":"","STATUS":"Entregue"},{"TDS":"012780","CLIENTE":"SUZANO S.A.","PROJETO":"FLEXNAV 4000 AMR TDP + PERIFERICOS","FAT_date":"2025-05-03","Atraso":"","Obs":"","STATUS":"Entregue"},{"TDS":"013042","CLIENTE":"SUZANO S.A.","PROJETO":"FLEXNAV 4000 AMR 02","FAT_date":"2025-05-03","Atraso":"","Obs":"","STATUS":"Entregue"},{"TDS":"013043","CLIENTE":"SUZANO S.A.","PROJETO":"FLEXNAV 4000 AMR 03","FAT_date":"2025-05-03","Atraso":"","Obs":"","STATUS":"Entregue"},{"TDS":"013044","CLIENTE":"SUZANO S.A.","PROJETO":"FLEXNAV 4000 AMR 04","FAT_date":"2025-05-03","Atraso":"","Obs":"","STATUS":"Entregue"},{"TDS":"013716","CLIENTE":"J A TEIXEIRA VETERINÁRIA","PROJETO":"CÉLULA ROB. DE PALETIZAÇÃO FLEXPALL R180","FAT_date":"2025-06-02","Atraso":"","Obs":"","STATUS":"Entregue"},{"TDS":"013875","CLIENTE":"PIRACANJUBA","PROJETO":"CARRO SATÉLITE FLEXSAT 1500-26","FAT_date":"2025-06-10","Atraso":"","Obs":"","STATUS":"Entregue"},{"TDS":"013874","CLIENTE":"C.VALE","PROJETO":"CARRO SATÉLITE FLEXSAT 1500-25","FAT_date":"2025-07-18","Atraso":"","Obs":"","STATUS":"Entregue"},{"TDS":"013877","CLIENTE":"LAR COOPERATIVA AGROINDUSTRIAL","PROJETO":"CARRO SATÉLITE FLEXSAT 1500-28","FAT_date":"2025-07-18","Atraso":"","Obs":"","STATUS":"Entregue"},{"TDS":"012949","CLIENTE":"JOHN DEERE","PROJETO":"CÉLULA ROB DE SOLDA FLEXWELD - PROJETO TUCANO","FAT_date":"2025-07-19","Atraso":"","Obs":"","STATUS":"Entregue"},{"TDS":"014039","CLIENTE":"PHAMETAL","PROJETO":"CÉLULA ROB. DE SOLDA FLEXWELD 3R6","FAT_date":"2025-07-24","Atraso":"","Obs":"","STATUS":"Entregue"},{"TDS":"013876","CLIENTE":"SEMENTES OESTE PAULISTA","PROJETO":"CARRO SATÉLITE FLEXSAT 1500-27","FAT_date":"2025-07-24","Atraso":"","Obs":"","STATUS":"Entregue"},{"TDS":"012860","CLIENTE":"METALURGICA RIOSULENSE AS","PROJETO":"CÉLULA DE REBARBAÇÃO FLEXDEB R210MT-DALCA MT 2025-07","FAT_date":"2025-08-19","Atraso":"","Obs":"","STATUS":"Entregue"},{"TDS":"014402","CLIENTE":"MGL","PROJETO":"CÉLULA DE REBARBAÇÃO FLEXDEB R210MT-DALCA MT 2025-10","FAT_date":"2025-09-15","Atraso":"","Obs":"","STATUS":"Entregue"},{"TDS":"014042","CLIENTE":"VENAX","PROJETO":"CÉLULA ROB DE POLIMENTO FLEXPOLISH R70","FAT_date":"2025-09-16","Atraso":"","Obs":"","STATUS":"Entregue"},{"TDS":"012861","CLIENTE":"DALCA ROB.OTICA LTDA","PROJETO":"CÉLULA DE REBARBAÇÃO FLEXDEB R210MT-DALCA MT 2025-08","FAT_date":"2025-09-23","Atraso":"","Obs":"","STATUS":"Entregue"},{"TDS":"014769","CLIENTE":"DALCA ROB.OTICA LTDA","PROJETO":"FEIRA METALURGIA 2025","FAT_date":"2025-09-23","Atraso":"","Obs":"","STATUS":"Entregue"},{"TDS":"014112","CLIENTE":"COTRIPAL AGROPECUARIA COOPERATIVA","PROJETO":"FLEXSAT 1500-29","FAT_date":"2025-10-30","Atraso":"","Obs":"Aguardando coleta","STATUS":"Expedição"},{"TDS":"014113","CLIENTE":"COTRIPAL AGROPECUARIA COOPERATIVA","PROJETO":"FLEXSAT 1500-30","FAT_date":"2025-10-30","Atraso":"","Obs":"Aguardando coleta","STATUS":"Expedição"},{"TDS":"014654","CLIENTE":"C.VALE","PROJETO":"FLEXSAT 1500-35-CVA0004-REV01","FAT_date":"2025-11-17","Atraso":"","Obs":"","STATUS":"Eng.Produto"},{"TDS":"014655","CLIENTE":"C.VALE","PROJETO":"FLEXSAT 1500-36-CVA0004-REV01","FAT_date":"2025-11-24","Atraso":"","Obs":"","STATUS":"Eng.Produto"},{"TDS":"014770","CLIENTE":"STARA S.A","PROJETO":"CÉLULA DE REBARBAÇÃO FLEXDEB R210MT DALCA MT 2025-14","FAT_date":"2025-11-26","Atraso":"","Obs":"","STATUS":"Entregue"},{"TDS":"012992","CLIENTE":"MAXBEM","PROJETO":"CÉLULA ROBOTIZADA DE PALETIZAÇÃO FLEXPALL R180","FAT_date":"2025-12-11","Atraso":"","Obs":"","STATUS":"Entregue"},{"TDS":"014795","CLIENTE":"MONARCH INDUSTRIES","PROJETO":"FLEXDEB R210MT DALCA MT 2025-17","FAT_date":"2026-02-11","Atraso":"5","Obs":"Exportação Canada","STATUS":"Expedição"},{"TDS":"015594","CLIENTE":"HYVA","PROJETO":"POC-AMR KUKA-HYVA HYV0003","FAT_date":"2026-02-20","Atraso":"","Obs":"Foi feito no prazo","STATUS":"POC"},{"TDS":"014506","CLIENTE":"DALCA ROBOTICA LTDA","PROJETO":"FLEXDEB R210MT P&D 2025-12","FAT_date":"2026-02-23","Atraso":"","Obs":"Projeto pausado","STATUS":"Pausado"},{"TDS":"014658","CLIENTE":"DALCA ROBOTICA LTDA","PROJETO":"FLEXDEB R210MTFANUC 2025-13","FAT_date":"2026-02-23","Atraso":"","Obs":"Falta Robo/spindle novo","STATUS":"Pausado"},{"TDS":"014771","CLIENTE":"ROMI S.A.","PROJETO":"FLEXDEB R210MT DALCA MT 2025-15","FAT_date":"2026-02-24","Atraso":"","Obs":"Data limite contrato 18/03","STATUS":"Software"},{"TDS":"014505","CLIENTE":"TRAMONTINA ELETRIK S.A.","PROJETO":"FLEXDEB R210MT 2025-11","FAT_date":"2026-02-25","Atraso":"77","Obs":"","STATUS":"Software"},{"TDS":"014652","CLIENTE":"OLEOS MENU","PROJETO":"FLEXSAT 1500-33","FAT_date":"2026-02-27","Atraso":"29","Obs":"Aguardando bateria e Drive","STATUS":"Expedição"},{"TDS":"014657","CLIENTE":"DALCA ROBOTICA LTDA","PROJETO":"FLEXWELD ROBOX TV2","FAT_date":"2026-03-02","Atraso":"","Obs":"","STATUS":"Pausado"},{"TDS":"014772","CLIENTE":"MINATTI FUNDICAO TECNICA LTDA","PROJETO":"FLEXDEB R70MP DALCA MP 2025-16","FAT_date":"2026-03-02","Atraso":"40","Obs":"","STATUS":"Software"},{"TDS":"015365","CLIENTE":"FUNDIMISA","PROJETO":"FLEXDEB R210MTFANUC2025-21","FAT_date":"2026-03-03","Atraso":"11","Obs":"Start: 30/09/2025","STATUS":"Software"},{"TDS":"014620","CLIENTE":"STARA S.A","PROJETO":"FLEXDEB R70 MP","FAT_date":"2026-03-04","Atraso":"","Obs":"","STATUS":"Software"},{"TDS":"015825","CLIENTE":"DRAXTON","PROJETO":"POC-GIS DRAXTON REBARBACAO","FAT_date":"2026-03-11","Atraso":"","Obs":"","STATUS":"POC"},{"TDS":"015362","CLIENTE":"DALCA ROBOTICA LTDA","PROJETO":"FLEXDEB R210MT 2025-18","FAT_date":"2026-03-20","Atraso":"","Obs":"","STATUS":"Em Produção"},{"TDS":"014656","CLIENTE":"DALCA ROBOTICA LTDA","PROJETO":"FLEXWELD ROBOX TF KIT ESTUN","FAT_date":"2026-03-23","Atraso":"","Obs":"","STATUS":"Pausado"},{"TDS":"014653","CLIENTE":"VINICOLA GALIOTTO LTDA","PROJETO":"FLEXSAT 1500-34","FAT_date":"2026-03-26","Atraso":"","Obs":"Carros prontos","STATUS":"Expedição"},{"TDS":"015363","CLIENTE":"DALCA ROBOTICA LTDA","PROJETO":"FLEXDEB R210MT 2025-19","FAT_date":"2026-03-27","Atraso":"","Obs":"","STATUS":"Em Produção"},{"TDS":"014265","CLIENTE":"NATUROVOS","PROJETO":"FLEX PALL 180","FAT_date":"2026-03-27","Atraso":"24","Obs":"","STATUS":"Software"},{"TDS":"014114","CLIENTE":"BELLAVER TRANSPORTES LTDA","PROJETO":"FLEXSAT 1500-31","FAT_date":"2026-03-31","Atraso":"","Obs":"Start: 12/11/2025","STATUS":"Expedição"},{"TDS":"014115","CLIENTE":"BELLAVER TRANSPORTES LTDA","PROJETO":"FLEXSAT 1500-32","FAT_date":"2026-03-31","Atraso":"","Obs":"Start: 12/11/2025","STATUS":"Expedição"},{"TDS":"015492","CLIENTE":"LACTALIS DO BRASIL","PROJETO":"FLEXSAT 1500-37","FAT_date":"2026-04-02","Atraso":"","Obs":"","STATUS":"Eng.Produto"},{"TDS":"015493","CLIENTE":"LACTALIS DO BRASIL","PROJETO":"FLEXSAT 1500-38","FAT_date":"2026-04-02","Atraso":"","Obs":"","STATUS":"Eng.Produto"},{"TDS":"015494","CLIENTE":"LACTALIS DO BRASIL","PROJETO":"FLEXSAT 1500-39","FAT_date":"2026-04-02","Atraso":"","Obs":"","STATUS":"Eng.Produto"},{"TDS":"015495","CLIENTE":"LACTALIS DO BRASIL","PROJETO":"FLEXSAT 1500-40","FAT_date":"2026-04-02","Atraso":"","Obs":"","STATUS":"Eng.Produto"},{"TDS":"015364","CLIENTE":"DALCA ROBOTICA LTDA","PROJETO":"FLEXDEB R210MT 2025-20","FAT_date":"2026-04-03","Atraso":"","Obs":"","STATUS":"Em Produção"},{"TDS":"015826","CLIENTE":"CATERPILLAR MAPLETON USA","PROJETO":"POC-CATERPILLAR REBARBACAO","FAT_date":"2026-04-03","Atraso":"","Obs":"","STATUS":"POC"},{"TDS":"015813","CLIENTE":"ACME FOUNDRY","PROJETO":"POC-ACME FOUNDRY REBARBACAO","FAT_date":"2026-04-03","Atraso":"","Obs":"","STATUS":"POC"},{"TDS":"015093","CLIENTE":"STARA S.A","PROJETO":"FLEXDEB R70 MP","FAT_date":"2026-04-22","Atraso":"","Obs":"","STATUS":"Em Produção"},{"TDS":"015595","CLIENTE":"GM (GRAVATAI)","PROJETO":"POC-AMR KUKA-GM GMG0002","FAT_date":"2026-04-24","Atraso":"","Obs":"","STATUS":"POC"},{"TDS":"015700","CLIENTE":"DALCA ROBOTICA LTDA","PROJETO":"FLEXSAT 1500-41","FAT_date":"2026-05-14","Atraso":"","Obs":"","STATUS":"Eng.Produto"},{"TDS":"015701","CLIENTE":"DALCA ROBOTICA LTDA","PROJETO":"FLEXSAT 1500-42","FAT_date":"2026-05-14","Atraso":"","Obs":"","STATUS":"Eng.Produto"},{"TDS":"015702","CLIENTE":"DALCA ROBOTICA LTDA","PROJETO":"FLEXSAT 1500-43","FAT_date":"2026-05-14","Atraso":"","Obs":"","STATUS":"Eng.Produto"},{"TDS":"015703","CLIENTE":"DALCA ROBOTICA LTDA","PROJETO":"FLEXSAT 1500-44","FAT_date":"2026-05-14","Atraso":"","Obs":"","STATUS":"Eng.Produto"},{"TDS":"015850","CLIENTE":"DALCA ROBOTICA LTDA","PROJETO":"FLEXPALLR140+FLEXSAT1500+AMR-FISPAL 2026","FAT_date":"2026-06-05","Atraso":"","Obs":"Feira Fispal - ATENÇÃO!","STATUS":"Eng.Produto"},{"TDS":"015705","CLIENTE":"USIBLEND DO BRASIL LTDA","PROJETO":"FLEXPALL R240","FAT_date":"2026-06-12","Atraso":"","Obs":"","STATUS":"Eng.Produto"},{"TDS":"015684","CLIENTE":"SARTORI","PROJETO":"FLEXPOLISHER R70 MP","FAT_date":"2026-07-03","Atraso":"","Obs":"","STATUS":"Eng.Produto"},{"TDS":"015094","CLIENTE":"VIVEO","PROJETO":"FLEXPACK R10","FAT_date":"2026-07-20","Atraso":"24","Obs":"Start: 23/07/2025","STATUS":"Eng.Produto"},{"TDS":"015869","CLIENTE":"DALCA ROBOTICA LTDA","PROJETO":"FLEXSAT 1500-45","FAT_date":"2026-07-23","Atraso":"","Obs":"","STATUS":"Eng.Produto"},{"TDS":"015870","CLIENTE":"DALCA ROBOTICA LTDA","PROJETO":"FLEXSAT 1500-46","FAT_date":"2026-07-23","Atraso":"","Obs":"","STATUS":"Eng.Produto"},{"TDS":"015871","CLIENTE":"DALCA ROBOTICA LTDA","PROJETO":"FLEXSAT 1500-47","FAT_date":"2026-07-23","Atraso":"","Obs":"","STATUS":"Eng.Produto"},{"TDS":"015872","CLIENTE":"DALCA ROBOTICA LTDA","PROJETO":"FLEXSAT 1500-48","FAT_date":"2026-07-23","Atraso":"","Obs":"","STATUS":"Eng.Produto"},{"TDS":"015685","CLIENTE":"PLATA INDUSTRIA METALURGICA LTDA","PROJETO":"FLEXDEB R70MP","FAT_date":"2026-07-30","Atraso":"","Obs":"","STATUS":"Em Produção"},{"TDS":"015699","CLIENTE":"AKEO INDUSTRIAL LTDA","PROJETO":"FLEXHAND/PAINT R20","FAT_date":"2026-09-23","Atraso":"","Obs":"","STATUS":"Eng.Produto"},{"TDS":"015873","CLIENTE":"DALCA ROBOTICA LTDA","PROJETO":"FLEXSAT 1500-49","FAT_date":"2026-12-18","Atraso":"","Obs":"Nova versão 2027","STATUS":"Eng.Produto"}];
+
+var D=BASE.slice(), FD=D.slice(), SF='all';
+var MN=['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+var MNF=['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+
+// Expedição = Entregue para fins de exibição
+function normSt(s){
+  if(!s)return'Entregue';
+  s=s.trim();
+  if(s==='Expedição')return'Entregue';
+  if(s==='Em produção')return'Em Produção';
+  return s;
+}
+function dispSt(d){
+  // Mantém label original para não perder informação, mas agrupa como Entregue
+  return d._rawStatus==='Expedição'?'Entregue (Exp.)':d.STATUS;
+}
+
+function piC(s){return{Entregue:'p-ent','Em Produção':'p-prod',Software:'p-sw','Eng.Produto':'p-eng',Pausado:'p-pau',POC:'p-poc'}[s]||'p-ent';}
+function chipC(s){return{'Entregue':'c-ent','Em Produção':'c-prod','Software':'c-sw','Eng.Produto':'c-eng','Pausado':'c-pau','POC':'c-poc'}[s]||'c-ent';}
+function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+
+// ── XLSX UPLOAD ────────────────────────────────────────────────────
+function hf(file){
+  if(!file)return;
+  var s=document.getElementById('upst');s.className='upst ld';s.textContent='Lendo planilha...';
+  var r=new FileReader();
+  r.onload=function(e){
+    try{
+      var wb=XLSX.read(new Uint8Array(e.target.result),{type:'array',cellDates:true});
+      // --- SAT + Status de Instalação (aba 'Gestão de Instalação')
+      var instMap={};
+      var instName=wb.SheetNames.find(function(n){var l=n.toLowerCase();return (l.includes('gest')&&l.includes('instal'))||l.includes('instala');});
+      if(instName){
+        var irows=XLSX.utils.sheet_to_json(wb.Sheets[instName],{header:1,raw:true,defval:'',range:1});
+        var ihr=-1,icm={};
+        for(var ii=0;ii<Math.min(irows.length,12);ii++){
+          var rr=irows[ii]; if(!rr) continue;
+          if(rr.join('|').toUpperCase().match(/TDS|SAT/)){
+            ihr=ii;
+            rr.forEach(function(h,ix){ if(!h) return; var hu=String(h).toUpperCase().trim();
+              if(hu.match(/^TDS/)) icm.TDS=ix;
+              if(hu==='SAT' || hu.includes('SAT ' ) || hu.includes('SAT.')) icm.SAT=ix;
+              if(hu.includes('STATUS')||hu.includes('SITUA')) icm.ST=ix;
+            });
+            break;
+          }
+        }
+        if(ihr!==-1 && icm.TDS!==undefined){
+          for(var ij=ihr+1; ij<irows.length; ij++){
+            var rw=irows[ij]; if(!rw||rw.length<2) continue;
+            var t=gc(rw,icm.TDS); if(!t) continue;
+            var sat=icm.SAT!==undefined?gc(rw,icm.SAT):'';
+            var st=icm.ST!==undefined?gc(rw,icm.ST):'';
+            if(sat||st){ instMap[String(t).trim()]={SAT:sat,INST_STATUS:st}; }
+          }
+        }
+      }
+
+      var sn=wb.SheetNames.find(function(n){return n.toLowerCase().includes('entrega')||n.toLowerCase().includes('2025');})||wb.SheetNames[0];
+      var rows=XLSX.utils.sheet_to_json(wb.Sheets[sn],{header:1,raw:true,defval:'',range:1});
+      var hr=-1,cm={};
+      for(var i=0;i<Math.min(rows.length,8);i++){
+        var rr=rows[i];if(!rr)continue;
+        if(rr.join('|').toUpperCase().match(/TDS|CLIENTE|FAT/)){
+          hr=i;
+          rr.forEach(function(h,ix){if(!h)return;var hu=String(h).toUpperCase().trim();
+            if(hu.match(/^TDS/))cm.TDS=ix;
+            if(hu.includes('CLIENTE'))cm.CLI=ix;
+            if(hu.includes('PROJETO')||hu.includes('DESCRI'))cm.PROJ=ix;
+            if(hu==='FAT'||hu.match(/^FAT.{0,3}$/))cm.FAT=ix;
+            if(hu.includes('ATRASO'))cm.ATR=ix;
+            if(hu.match(/^OBS/))cm.OBS=ix;
+            if(hu.includes('STATUS')||hu.includes('SITUA'))cm.ST=ix;
+          });break;
+        }
+      }
+      if(hr===-1){hr=0;cm={TDS:0,CLI:1,PROJ:2,FAT:3,ATR:4,OBS:5,ST:6};}
+      var parsed=[];
+      var dbg={noProj:0,noFat:0,noDate:0,not2526:0,rows:0};
+      for(var j=hr+1;j<rows.length;j++){
+        dbg.rows++;
+        var rw=rows[j];if(!rw||rw.length<3)continue;
+        var tds=gc(rw,cm.TDS);
+        var proj=gc(rw,cm.PROJ);
+    var fatVal = (cm.FAT!==undefined? rw[cm.FAT] : '');
+    if(!tds){dbg.noProj++;continue;}
+        if(!fatVal){dbg.noFat++;continue;}
+    var fd=pd(fatVal);if(!fd){dbg.noDate++;continue;}
+        var yr=fd.slice(0,4);if(yr!=='2025'&&yr!=='2026'){dbg.not2526++;continue;}
+        var rawSt=(gc(rw,cm.ST)||'').trim();
+        var st=normSt(rawSt);
+        var tdsKey=(gc(rw,cm.TDS)||'—');
+        var inst=instMap[String(tdsKey).trim()]||{};
+        parsed.push({TDS:tdsKey,CLIENTE:gc(rw,cm.CLI)||'—',PROJETO:proj,FAT_date:fd,Atraso:gc(rw,cm.ATR)||'',Obs:gc(rw,cm.OBS)||'',STATUS:st,_rawStatus:rawSt,SAT:inst.SAT,INST_STATUS:inst.INST_STATUS});
+      }
+      parsed.sort(function(a,b){return a.FAT_date.localeCompare(b.FAT_date);});
+      console.log('[DALCA FAT] rows=',dbg.rows,'parsed=',parsed.length,'discard noTDS=',dbg.noProj,'noFat=',dbg.noFat,'noDate=',dbg.noDate,'not2526=',dbg.not2526);
+      D=parsed;FD=parsed.slice();SF='all';
+      var ts=new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
+      s.className='upst ok';s.textContent='✓ '+file.name+' · aba: '+sn;
+      document.getElementById('upmeta').textContent=parsed.length+' projetos 2025-2026 · '+ts;
+      var sdl=document.getElementById('sdlbl');sdl.className='sdot live';sdl.textContent=parsed.length+' projetos · '+ts;
+      document.querySelectorAll('.fb').forEach(function(b){b.classList.remove('on');});
+      document.querySelector('.fb').classList.add('on');
+      document.getElementById('ys').value='all';document.getElementById('sq').value='';
+      bNM();ra();sh2('✓ '+parsed.length+' projetos carregados!');
+      }catch(err){s.className='upst err';s.textContent='✗ Erro: '+err.message;console.error(err);}
+  };
+  r.readAsArrayBuffer(file);
+}
+function gc(row,ix){if(ix===undefined||ix===null)return'';var v=row[ix];return v!==undefined&&v!==null?String(v).trim():'';}
+function pd(v){
+  if(v===undefined || v===null || v==='') return null;
+
+  // Date object
+  if(Object.prototype.toString.call(v)==='[object Date]' && !isNaN(v)){
+    var yy=v.getFullYear();
+    var mm=String(v.getMonth()+1).padStart(2,'0');
+    var dd=String(v.getDate()).padStart(2,'0');
+    return yy+'-'+mm+'-'+dd;
+  }
+
+  // Excel serial number (number)
+  if(typeof v==='number' && isFinite(v)){
+    var d=new Date(Math.round((v-25569)*86400*1000));
+    if(!isNaN(d)){
+      var yy=d.getUTCFullYear();
+      var mm=String(d.getUTCMonth()+1).padStart(2,'0');
+      var dd=String(d.getUTCDate()).padStart(2,'0');
+      return yy+'-'+mm+'-'+dd;
+    }
+  }
+
+  var s=String(v).trim();
+
+  // Numeric string that is actually Excel serial
+  if(/^\d+(\.\d+)?$/.test(s)){
+    var num=parseFloat(s);
+    if(isFinite(num)){
+      var d0=new Date(Math.round((num-25569)*86400*1000));
+      if(!isNaN(d0)){
+        var yy0=d0.getUTCFullYear();
+        var mm0=String(d0.getUTCMonth()+1).padStart(2,'0');
+        var dd0=String(d0.getUTCDate()).padStart(2,'0');
+        return yy0+'-'+mm0+'-'+dd0;
+      }
+    }
+  }
+
+  // yyyy-mm-dd or yyyy-mm-ddTHH...
+  if(/^\d{4}-\d{2}-\d{2}/.test(s)) return s.slice(0,10);
+
+  // dd/mm/yyyy or dd/mm/yy (allow time suffix)
+  var m=s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{2,4})/);
+  if(m){
+    var yy = m[3].length===2 ? ('20'+m[3]) : m[3];
+    return yy+'-'+m[2].padStart(2,'0')+'-'+m[1].padStart(2,'0');
+  }
+
+  // dd-mm-yyyy or dd-mm-yy
+  var m2=s.match(/^(\d{1,2})-(\d{1,2})-(\d{2,4})/);
+  if(m2){
+    var yy2 = m2[3].length===2 ? ('20'+m2[3]) : m2[3];
+    return yy2+'-'+m2[2].padStart(2,'0')+'-'+m2[1].padStart(2,'0');
+  }
+
+  // dd.mm.yyyy or dd.mm.yy
+  var m3=s.match(/^(\d{1,2})\.(\d{1,2})\.(\d{2,4})/);
+  if(m3){
+    var yy3 = m3[3].length===2 ? ('20'+m3[3]) : m3[3];
+    return yy3+'-'+m3[2].padStart(2,'0')+'-'+m3[1].padStart(2,'0');
+  }
+
+  // Fallback: Date parse
+  var d2=new Date(s);
+  if(!isNaN(d2)){
+    var yyf=d2.getFullYear();
+    var mmf=String(d2.getMonth()+1).padStart(2,'0');
+    var ddf=String(d2.getDate()).padStart(2,'0');
+    return yyf+'-'+mmf+'-'+ddf;
+  }
+  return null;
+}
+
+// Normalize base data too
+D=D.map(function(d){d._rawStatus=d.STATUS;d.STATUS=normSt(d.STATUS);return d;});
+
+document.addEventListener('dragover',function(e){e.preventDefault();document.getElementById('drov').classList.add('on');});
+document.addEventListener('dragleave',function(e){if(!e.relatedTarget)document.getElementById('drov').classList.remove('on');});
+document.addEventListener('drop',function(e){e.preventDefault();document.getElementById('drov').classList.remove('on');var f=e.dataTransfer.files[0];if(f&&(f.name.endsWith('.xlsx')||f.name.endsWith('.xls')))hf(f);});
+
+// ── FILTERS ────────────────────────────────────────────────────────
+function sf(s,btn){SF=s;document.querySelectorAll('.fb').forEach(function(b){b.classList.remove('on');});btn.classList.add('on');af();}
+function af(){
+  var y=document.getElementById('ys').value,q=document.getElementById('sq').value.toLowerCase();
+  FD=D.filter(function(d){
+    if(y!=='all'&&d.FAT_date.slice(0,4)!==y)return false;
+    if(SF!=='all'&&d.STATUS!==SF)return false;
+    if(q&&!(d.TDS.toLowerCase().includes(q)||d.CLIENTE.toLowerCase().includes(q)||d.PROJETO.toLowerCase().includes(q)))return false;
+    return true;
+  });
+  ra();
+}
+
+// ── HELPERS ────────────────────────────────────────────────────────
+function dn(s){var t=new Date();t.setHours(0,0,0,0);return Math.round((new Date(s+'T00:00:00')-t)/86400000);}
+function fd2(s){var p=s.split('-');return p[2]+'/'+p[1]+'/'+p[0];}
+
+// ── RENDER ─────────────────────────────────────────────────────────
+function rKP(){
+  var tot=FD.length,ent=0,ep=0,atr=0,pr=0;
+  FD.forEach(function(d){
+    if(d.STATUS==='Entregue')ent++;
+    if(d.STATUS==='Em Produção')ep++;
+    if(parseInt(d.Atraso)>0)atr++;
+    var dl=dn(d.FAT_date);if(dl>=0&&dl<=30)pr++;
+  });
+  var kd=[
+    {l:'Total Projetos',v:tot,s:'2025–2026',c:'#002B5C'},
+    {l:'Entregues',v:ent,s:Math.round(ent/(tot||1)*100)+'% do total',c:'#0a7c3e'},
+    {l:'Em Produção',v:ep,s:'produção ativa',c:'#0e7490'},
+    {l:'Com Atraso',v:atr,s:'dias registrados',c:'#E8650A'},
+    {l:'Próx. 30 dias',v:pr,s:'FATs previstos',c:'#b45309'}
+  ];
+  var el=document.getElementById('kp');el.innerHTML='';
+  kd.forEach(function(k){el.innerHTML+='<div class="kp" style="--kc:'+k.c+'"><div class="kp-accent"></div><div class="kl">'+k.l+'</div><div class="kv">'+k.v+'</div><div class="ks">'+k.s+'</div></div>';});
+}
+
+function rCal(){
+  var bm={};FD.forEach(function(d){var k=d.FAT_date.slice(0,7);if(!bm[k])bm[k]=[];bm[k].push(d);});
+  var ms=Object.keys(bm).sort();
+  var cg=document.getElementById('cg');cg.innerHTML='';
+  document.getElementById('c1').textContent=FD.length+' projetos';
+  ms.forEach(function(k){
+    var col=document.createElement('div');col.className='mc';
+    var p=k.split('-');
+    col.innerHTML='<div class="mlb">'+MN[parseInt(p[1])-1]+' '+p[0]+'<span class="mcnt">'+bm[k].length+'</span></div>';
+    bm[k].forEach(function(d){
+      var ch=document.createElement('div');
+      ch.className='chip '+chipC(d.STATUS);
+      ch.innerHTML='<div class="ctd">'+esc(d.TDS)+'</div><div class="ccl">'+esc(d.CLIENTE)+'</div><div class="cdt">'+fd2(d.FAT_date)+'</div>';
+      ch.onclick=function(){om(d);};
+      col.appendChild(ch);
+    });
+    cg.appendChild(col);
+  });
+}
+
+function rTbl(){
+  var tb=document.getElementById('tb');tb.innerHTML='';
+  document.getElementById('c2').textContent=FD.length+' projetos';
+  FD.forEach(function(d){
+    var atr=parseInt(d.Atraso)>0?'<span style="color:#E8650A;font-family:\'IBM Plex Mono\',monospace;font-size:11px;font-weight:600">+'+d.Atraso+'d</span>':'<span style="color:var(--mt2)">—</span>';
+    var dl=dn(d.FAT_date);
+    var ds=d.STATUS==='Entregue'?'color:var(--mt2)':dl<0?'color:#E8650A':dl<=14?'color:#b45309':'color:#0a7c3e';
+    var lbl=d._rawStatus==='Expedição'?'Entregue <span style="font-size:9px;opacity:.6">(Exp.)</span>':esc(d.STATUS);
+    var dj=JSON.stringify(d).replace(/"/g,'&quot;');
+    tb.innerHTML+='<tr onclick="om('+dj+')" style="cursor:pointer"><td class="tc">'+esc(d.TDS)+'</td><td class="ccol">'+esc(d.CLIENTE)+'</td><td>'+esc(d.PROJETO)+'</td><td class="dc" style="'+ds+'">'+fd2(d.FAT_date)+'</td><td>'+atr+'</td><td><span class=\"pi '+piC(d.STATUS)+'\">'+lbl+'</span></td><td class=\"tc\"><span class=\"mono\">'+(d.SAT&&String(d.SAT).trim()!==''?esc(String(d.SAT)):'—')+'</span></td><td>'+ (d.INST_STATUS&&String(d.INST_STATUS).trim()!==''?esc(String(d.INST_STATUS)):'—') +'</td></tr>';
+  });
+}
+
+function rUp(){
+  var up=D.filter(function(d){var dl=dn(d.FAT_date);return dl>=0&&dl<=60&&d.STATUS!=='Entregue';}).sort(function(a,b){return a.FAT_date.localeCompare(b.FAT_date);}).slice(0,10);
+  document.getElementById('c3').textContent=up.length+' próx. 60d';
+  var el=document.getElementById('ul');el.innerHTML='';
+  if(!up.length){el.innerHTML='<div style="padding:20px;text-align:center;color:var(--mt);font-size:13px">Nenhuma entrega pendente nos próximos 60 dias</div>';return;}
+  up.forEach(function(d){
+    var dl=dn(d.FAT_date);
+    var dc=dl<=7?'dl-u':dl<=30?'dl-s':'dl-o';
+    var dt=dl===0?'HOJE':dl===1?'AMANHÃ':dl+'d';
+    var pts=d.FAT_date.split('-');
+    var dj=JSON.stringify(d).replace(/"/g,'&quot;');
+    el.innerHTML+='<div class="ui" onclick="om('+dj+')"><div class="ud"><div class="ddd">'+parseInt(pts[2])+'</div><div class="mmm">'+MN[parseInt(pts[1])-1]+'</div></div><div class="ub"><div class="ut">'+esc(d.TDS)+'</div><div class="uj">'+esc(d.PROJETO)+'</div><div class="uc">'+esc(d.CLIENTE)+'</div></div><div style="flex-shrink:0"><span class="pi '+piC(d.STATUS)+'">'+esc(d.STATUS)+'</span><br><div class="'+dc+'">'+dt+'</div></div></div>';
+  });
+}
+
+function rBar(){
+  var bm={};D.forEach(function(d){var k=d.FAT_date.slice(0,7);if(!bm[k])bm[k]=0;bm[k]++;});
+  var ms=Object.keys(bm).sort();var mx=Math.max.apply(null,ms.map(function(m){return bm[m];}));
+  var el=document.getElementById('bc');el.innerHTML='';
+  ms.forEach(function(k){
+    var p=k.split('-'),pct=Math.round(bm[k]/mx*100);
+    var c=p[0]==='2025'?'#003B7A':'#E8650A';
+    el.innerHTML+='<div class="br"><div class="bl">'+MN[parseInt(p[1])-1]+'</div><div class="bb"><div class="bf" style="width:'+pct+'%;background:'+c+'"><span class="bv">'+bm[k]+'</span></div></div></div>';
+  });
+}
+
+function bNM(){
+  var sel=document.getElementById('nm');sel.innerHTML='';
+  var t=new Date();
+  [2025,2026].forEach(function(y){MNF.forEach(function(m,i){var k=y+'-'+(i+1<10?'0'+(i+1):(i+1));var op=document.createElement('option');op.value=k;op.textContent=m+' '+y;if(k===t.getFullYear()+'-'+(t.getMonth()+1<10?'0'+(t.getMonth()+1):(t.getMonth()+1)))op.selected=true;sel.appendChild(op);});});
+  bep();
+}
+
+function bep(){
+  var k=document.getElementById('nm').value,p=k.split('-');
+  var ml=MNF[parseInt(p[1])-1]+' '+p[0];
+  var fats=D.filter(function(d){return d.FAT_date.slice(0,7)===k;});
+  var hoje=new Date().toLocaleDateString('pt-BR');
+  var list='';fats.forEach(function(d,i){var atr=parseInt(d.Atraso)>0?' [ATRASO: +'+d.Atraso+' dias]':'';list+=(i+1)+'. TDS '+d.TDS+' | '+d.CLIENTE+'\n   Projeto: '+d.PROJETO+'\n   FAT: '+fd2(d.FAT_date)+' | Status: '+d.STATUS+atr+'\n\n';});
+  if(!fats.length)list='   Nenhum projeto com FAT previsto neste período.\n\n';
+  document.getElementById('ep').textContent='Assunto: [DALCA] FATs Liberados — '+ml+'\n\nBoa tarde,\n\nSeguem os projetos com FAT previsto para '+ml+', disponíveis para faturamento:\n\n'+list+'Total: '+fats.length+' projeto(s)\n\nSolicitamos a emissão das notas fiscais conforme as datas indicadas.\n\nAtt.,\nGerência de GP — Dalca Brasil | Emanuel\n'+hoje;
+}
+
+function oml(){
+  var sel=document.getElementById('et');
+  var tos=[];
+  for(var i=0;i<sel.options.length;i++){if(sel.options[i].selected)tos.push(sel.options[i].value);}
+  if(!tos.length){sh2('Selecione ao menos um destinatário');return;}
+  var to=tos.join(',');
+  var k=document.getElementById('nm').value,p=k.split('-'),ml=MNF[parseInt(p[1])-1]+' '+p[0];
+  window.location.href='mailto:'+encodeURIComponent(to)+'?subject='+encodeURIComponent('[DALCA] FATs Liberados — '+ml)+'&body='+encodeURIComponent(document.getElementById('ep').textContent);
+}
+function cpe(){var txt=document.getElementById('ep').textContent;if(navigator.clipboard){navigator.clipboard.writeText(txt);}else{var t2=document.createElement('textarea');t2.value=txt;document.body.appendChild(t2);t2.select();document.execCommand('copy');document.body.removeChild(t2);}var ct=document.getElementById('cpt');ct.style.display='block';setTimeout(function(){ct.style.display='none';},2000);}
+
+function om(d){
+  document.getElementById('mt').textContent=d.PROJETO;
+  document.getElementById('ms').textContent='TDS '+d.TDS+' · '+d.CLIENTE;
+  var dl=dn(d.FAT_date);
+  var dlt=d.STATUS==='Entregue'?'Concluído':dl<0?'Atrasado '+Math.abs(dl)+'d':dl===0?'HOJE':dl+'d restantes';
+  var stLbl=d._rawStatus==='Expedição'?'Entregue (Exp.)':d.STATUS;
+  document.getElementById('mg').innerHTML=
+    '<div class="mf"><label>FAT Previsto</label><div class="mv mva">'+fd2(d.FAT_date)+'</div></div>'+
+    '<div class="mf"><label>Status</label><div class="mv"><span class="pi '+piC(d.STATUS)+'">'+stLbl+'</span></div></div>'+'<div class="mf"><label>SAT</label><div class="mv">'+(d.SAT!==undefined&&d.SAT!==null&&String(d.SAT).trim()!==''?('<span class="mono">'+esc(String(d.SAT))+'</span>'):'—')+'</div></div>'+'<div class="mf"><label>Status Instalação</label><div class="mv">'+(d.INST_STATUS?('<span class="pill">'+esc(d.INST_STATUS)+'</span>'):'—')+'</div></div>'+
+    '<div class="mf"><label>Prazo</label><div class="mv">'+dlt+'</div></div>'+
+    '<div class="mf"><label>Atraso Registrado</label><div class="mv">'+(parseInt(d.Atraso)>0?'+'+d.Atraso+' dias':'—')+'</div></div>';
+  var mo=document.getElementById('mo');
+  if(d.Obs){mo.textContent=d.Obs;mo.style.display='block';}else{mo.style.display='none';}
+  document.getElementById('ov').classList.add('on');
+}
+function clm(){document.getElementById('ov').classList.remove('on');}
+function sh2(msg){var t=document.getElementById('tst');t.textContent=msg;t.classList.add('show');setTimeout(function(){t.classList.remove('show');},3000);}
+function ra(){rKP();rCal();rTbl();rUp();rBar();bep();}
+
+document.getElementById('dbd').textContent=new Date().toLocaleDateString('pt-BR',{weekday:'long',day:'2-digit',month:'long',year:'numeric'});
+bNM();ra();
+</script>
+</body>
+</html>
